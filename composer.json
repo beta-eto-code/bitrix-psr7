@@ -1,0 +1,20 @@
+{
+    "name": "beta/bitrix-psr7",
+    "description": "Routing for Bitrix app",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexander Nesterov",
+            "email": "alex19pov31@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "guzzlehttp/psr7": "^1.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "BitrixPSR7\\": "src/"
+        }
+    }
+}
