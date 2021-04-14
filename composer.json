@@ -1,6 +1,6 @@
 {
     "name": "beta/bitrix-psr7",
-    "description": "Routing for Bitrix app",
+    "description": "PSR-7 adapter for Bitrix",
     "license": "MIT",
     "authors": [
         {
