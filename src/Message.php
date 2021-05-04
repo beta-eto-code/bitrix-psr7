@@ -6,6 +6,7 @@ namespace BitrixPSR7;
 
 use Bitrix\Main\HttpRequest;
 use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
@@ -50,7 +51,7 @@ class Message implements MessageInterface
             $tempStream = fopen('php://temp', 'r+');
             stream_copy_to_stream($rawInput, $tempStream);
             rewind($tempStream);
-            $this->body = stream_for($tempStream);
+            $this->body = Utils::streamFor($tempStream);
         }
         $this->uri = new Uri($this->getCurrentLink());
         $this->attributes = $attributes;
@@ -191,7 +192,7 @@ class Message implements MessageInterface
     public function getBody()
     {
         if (!$this->body) {
-            $this->body = stream_for('');
+            $this->body = Utils::streamFor('');
         }
 
         return $this->body;
