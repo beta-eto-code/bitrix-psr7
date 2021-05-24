@@ -6,6 +6,7 @@ namespace BitrixPSR7;
 
 use Bitrix\Main\ArgumentTypeException;
 use Bitrix\Main\HttpResponse;
+use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Serializable;
@@ -138,7 +139,7 @@ class Response implements ResponseInterface, Serializable
     public function getBody()
     {
         if (!$this->body) {
-            $this->body = stream_for($this->response->getContent());
+            $this->body = Utils::streamFor($this->response->getContent());
         }
 
         return $this->body;
