@@ -114,6 +114,15 @@ class ServerRequest extends Request implements ServerRequestInterface
      */
     public function getParsedBody()
     {
+        if ($this->isCloned) {
+            return $this->request->getPostList()->toArray();
+        }
+
+        $contentType = $this->getHeaderLine('Content-type');
+        if ($contentType === 'application/json') {
+            return json_decode($this->body, true) ?? [];
+        }
+
         return $this->request->getPostList()->toArray();
     }
 
@@ -126,7 +135,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         $newRequest = $this->getClonedRequest();
         $newRequest->getPostList()->setValues($data);
 
-        return new static($newRequest, $this->httpVersion, $this->body, $this->attributes);
+        return new static($newRequest, $this->httpVersion, $this->body, $this->attributes, true);
     }
 
     /**

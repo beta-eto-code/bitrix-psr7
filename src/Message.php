@@ -36,12 +36,17 @@ class Message implements MessageInterface
      * @var array
      */
     protected $attributes;
+    /**
+     * @var bool
+     */
+    protected $isCloned;
 
     public function __construct(
         HttpRequest $request,
         string $httpVersion = null,
         $body = null,
-        array $attributes = []
+        array $attributes = [],
+        bool $isCloned = false
     ){
         $this->request = $request;
         $this->httpVersion = $httpVersion;
@@ -55,6 +60,7 @@ class Message implements MessageInterface
         }
         $this->uri = new Uri($this->getCurrentLink());
         $this->attributes = $attributes;
+        $this->isCloned = $isCloned;
     }
 
     /**
