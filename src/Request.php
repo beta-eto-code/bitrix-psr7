@@ -1,8 +1,6 @@
 <?php
 
-
 namespace BitrixPSR7;
-
 
 use Bitrix\Main\HttpRequest;
 use Psr\Http\Message\RequestInterface;
@@ -12,6 +10,7 @@ class Request extends Message implements RequestInterface
 {
     /**
      * @return string
+     * @psalm-suppress UndefinedDocblockClass
      */
     public function getRequestTarget()
     {
@@ -20,7 +19,9 @@ class Request extends Message implements RequestInterface
 
     /**
      * @param mixed $requestTarget
-     * @return $this|Request
+     *
+     * @return static
+     * @psalm-suppress UndefinedDocblockClass
      */
     public function withRequestTarget($requestTarget)
     {
@@ -31,16 +32,19 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * @return string|null
+     * @return string
+     * @psalm-suppress UndefinedDocblockClass
      */
     public function getMethod()
     {
-        return $this->request->getRequestMethod();
+        return (string)$this->request->getRequestMethod();
     }
 
     /**
      * @param string $method
-     * @return $this|Request
+     *
+     * @return static
+     * @psalm-suppress UndefinedDocblockClass
      */
     public function withMethod($method)
     {
@@ -60,8 +64,10 @@ class Request extends Message implements RequestInterface
 
     /**
      * @param UriInterface $uri
-     * @param false $preserveHost
-     * @return $this|Request
+     * @param bool $preserveHost
+     *
+     * @return static
+     * @psalm-suppress UndefinedDocblockClass
      */
     public function withUri(UriInterface $uri, $preserveHost = false)
     {
@@ -69,13 +75,5 @@ class Request extends Message implements RequestInterface
         $newRequest->getServer()->set('REQUEST_URI', $uri);
 
         return new static($newRequest, $this->httpVersion, $this->body, $this->attributes);
-    }
-
-    /**
-     * @return HttpRequest
-     */
-    protected function getClonedRequest()
-    {
-        return clone $this->request;
     }
 }

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace BitrixPSR7;
-
 
 use Bitrix\Main\HttpRequest;
 use GuzzleHttp\Psr7\Uri;
@@ -13,11 +11,8 @@ use Psr\Http\Message\UriInterface;
 
 class Message implements MessageInterface
 {
-    const DEFAULT_HTTP_VERSION = '1.1';
+    public const DEFAULT_HTTP_VERSION = '1.1';
 
-    /**
-     * @var HttpRequest
-     */
     protected $request;
 
     /**
@@ -41,13 +36,21 @@ class Message implements MessageInterface
      */
     protected $isCloned;
 
-    public function __construct(
+    /**
+     * @param HttpRequest $request
+     * @param string|null $httpVersion
+     * @param mixed $body
+     * @param array $attributes
+     * @param bool $isCloned
+     * @psalm-suppress UndefinedDocblockClass, UndefinedClass
+     */
+    final public function __construct(
         HttpRequest $request,
         string $httpVersion = null,
         $body = null,
         array $attributes = [],
         bool $isCloned = false
-    ){
+    ) {
         $this->request = $request;
         $this->httpVersion = $httpVersion;
         $this->body = $body;
@@ -66,6 +69,7 @@ class Message implements MessageInterface
     /**
      * @param HttpRequest $request
      * @return bool
+     * @psalm-suppress UndefinedClass
      */
     private function needCheckBody(HttpRequest $request)
     {
@@ -73,17 +77,22 @@ class Message implements MessageInterface
         return in_array($method, ['post', 'put']);
     }
 
-    private function getCurrentLink()
+    /**
+     * @return string
+     * @psalm-suppress UndefinedDocblockClass
+     */
+    private function getCurrentLink(): string
     {
         $server = $this->request->getServer();
-        return ($server->get('HTTPS') === 'on' ? "https" : "http").
-            "://".
-            $server->get('HTTP_HOST').
+        return ($server->get('HTTPS') === 'on' ? "https" : "http") .
+            "://" .
+            $server->get('HTTP_HOST') .
             $server->get('REQUEST_URI');
     }
 
     /**
      * @return string
+     * @psalm-suppress UndefinedDocblockClass
      */
     public function getProtocolVersion()
     {
@@ -98,7 +107,8 @@ class Message implements MessageInterface
 
     /**
      * @param string $version
-     * @return $this|Message
+     *
+     * @return static
      */
     public function withProtocolVersion($version)
     {
@@ -106,7 +116,8 @@ class Message implements MessageInterface
     }
 
     /**
-     * @return array|string[][]
+     * @return string[][]
+     * @psalm-suppress UndefinedDocblockClass
      */
     public function getHeaders()
     {
@@ -128,7 +139,12 @@ class Message implements MessageInterface
         return !empty($this->getHeader($name));
     }
 
-    public function getHeader($name)
+    /**
+     * @param string $name
+     * @return string[]
+     * @psalm-suppress UndefinedDocblockClass
+     */
+    public function getHeader($name): array
     {
         return (array)($this->request->getHeader($name) ?? []);
     }
@@ -144,13 +160,15 @@ class Message implements MessageInterface
             return '';
         }
 
-        return implode(',', (array)$value);
+        return implode(',', $value);
     }
 
     /**
      * @param string $name
      * @param string|string[] $value
-     * @return $this|Message
+     *
+     * @return static
+     * @psalm-suppress UndefinedDocblockClass
      */
     public function withHeader($name, $value)
     {
@@ -162,7 +180,9 @@ class Message implements MessageInterface
     /**
      * @param string $name
      * @param string|string[] $value
-     * @return $this|Message
+     *
+     * @return static
+     * @psalm-suppress UndefinedDocblockClass
      */
     public function withAddedHeader($name, $value)
     {
@@ -178,7 +198,9 @@ class Message implements MessageInterface
 
     /**
      * @param string $name
-     * @return $this|Message
+     *
+     * @return static
+     * @psalm-suppress UndefinedDocblockClass
      */
     public function withoutHeader($name)
     {
@@ -206,7 +228,8 @@ class Message implements MessageInterface
 
     /**
      * @param StreamInterface $body
-     * @return $this|Message
+     *
+     * @return static
      */
     public function withBody(StreamInterface $body)
     {
@@ -215,5 +238,14 @@ class Message implements MessageInterface
         }
 
         return new static($this->request, $this->httpVersion, $body, $this->attributes);
+    }
+
+    /**
+     * @return HttpRequest
+     * @psalm-suppress UndefinedDocblockClass, InvalidClone
+     */
+    protected function getClonedRequest()
+    {
+        return clone $this->request;
     }
 }

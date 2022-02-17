@@ -6,6 +6,9 @@ use GuzzleHttp\Psr7\UploadedFile;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
+/**
+ * @psalm-suppress UndefinedDocblockClass
+ */
 class ServerRequest extends Request implements ServerRequestInterface
 {
     /**
@@ -26,7 +29,8 @@ class ServerRequest extends Request implements ServerRequestInterface
 
     /**
      * @param array $cookies
-     * @return $this|Request
+     *
+     * @return static
      */
     public function withCookieParams(array $cookies)
     {
@@ -50,7 +54,8 @@ class ServerRequest extends Request implements ServerRequestInterface
     }
 
     /**
-     * @return array[]|UploadedFile[]|UploadedFileInterface[]
+     * @return array[]|UploadedFile[] (UploadedFile|UploadedFile[])[] (UploadedFile|UploadedFile[])[]
+     *
      */
     public function getUploadedFiles()
     {
@@ -79,27 +84,10 @@ class ServerRequest extends Request implements ServerRequestInterface
         }, $this->request->getFileList()->toArray());
     }
 
-    private function getFileList(): array
-    {
-        $fileList = [];
-        foreach ($this->request->getFileList() as $key => $file) {
-            foreach ($file as $k => $value) {
-                if (is_array($value)) {
-                    foreach ($value as $i => $v) {
-                        $fileList[$key][$i][$k] = $v;
-                    }
-                } else {
-                    $fileList[$key][$k] = $v;
-                }
-            }
-        }
-
-        return $fileList;
-    }
-
     /**
      * @param array $uploadedFiles
-     * @return $this|Request
+     *
+     * @return static
      */
     public function withUploadedFiles(array $uploadedFiles)
     {
@@ -128,7 +116,8 @@ class ServerRequest extends Request implements ServerRequestInterface
 
     /**
      * @param array|object|null $data
-     * @return $this|Request
+     *
+     * @return static
      */
     public function withParsedBody($data)
     {
@@ -147,44 +136,46 @@ class ServerRequest extends Request implements ServerRequestInterface
     }
 
     /**
-     * @param string $attribute
-     * @param null $default
+     * @param string $name
+     * @param mixed $default
      * @return mixed|null
      */
-    public function getAttribute($attribute, $default = null)
+    public function getAttribute($name, $default = null)
     {
-        if (false === array_key_exists($attribute, $this->attributes)) {
+        if (false === array_key_exists($name, $this->attributes)) {
             return $default;
         }
 
-        return $this->attributes[$attribute];
+        return $this->attributes[$name];
     }
 
     /**
-     * @param string $attribute
+     * @param string $name
      * @param mixed $value
-     * @return ServerRequestInterface
+     *
+     * @return static
      */
-    public function withAttribute($attribute, $value): ServerRequestInterface
+    public function withAttribute($name, $value): ServerRequestInterface
     {
         $new = clone $this;
-        $new->attributes[$attribute] = $value;
+        $new->attributes[$name] = $value;
 
         return $new;
     }
 
     /**
-     * @param string $attribute
-     * @return ServerRequestInterface
+     * @param string $name
+     *
+     * @return static
      */
-    public function withoutAttribute($attribute): ServerRequestInterface
+    public function withoutAttribute($name): ServerRequestInterface
     {
-        if (false === array_key_exists($attribute, $this->attributes)) {
+        if (false === array_key_exists($name, $this->attributes)) {
             return $this;
         }
 
         $new = clone $this;
-        unset($new->attributes[$attribute]);
+        unset($new->attributes[$name]);
 
         return $new;
     }

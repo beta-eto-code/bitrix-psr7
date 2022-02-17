@@ -1,8 +1,6 @@
 <?php
 
-
 namespace BitrixPSR7;
-
 
 use Bitrix\Main\ArgumentTypeException;
 use Bitrix\Main\HttpResponse;
@@ -13,21 +11,28 @@ use Serializable;
 
 class Response implements ResponseInterface, Serializable
 {
-    const DEFAULT_HTTP_VERSION = '1.1';
+    public const DEFAULT_HTTP_VERSION = '1.1';
 
     /**
      * @var HttpResponse
+     * @psalm-suppress UndefinedDocblockClass
      */
     private $response;
     /**
-     * @var string|null
+     * @var string
      */
     private $httpVersion;
     /**
-     * @var mixed|null
+     * @var mixed
      */
     private $body;
 
+    /**
+     * @param HttpResponse $response
+     * @param string|null $httpVersion
+     * @param mixed $body
+     * @psalm-suppress UndefinedDocblockClass, UndefinedClass
+     */
     public function __construct(HttpResponse $response, string $httpVersion = null, $body = '')
     {
         $this->response = $response;
@@ -36,7 +41,7 @@ class Response implements ResponseInterface, Serializable
     }
 
     /**
-     * @return string|null
+     * @return string
      */
     public function getProtocolVersion()
     {
@@ -45,7 +50,8 @@ class Response implements ResponseInterface, Serializable
 
     /**
      * @param string $version
-     * @return $this|Response
+     *
+     * @return static
      */
     public function withProtocolVersion($version)
     {
@@ -53,11 +59,12 @@ class Response implements ResponseInterface, Serializable
     }
 
     /**
-     * @return array|string[][]
+     * @return string[][]
+     * @psalm-suppress UndefinedDocblockClass
      */
     public function getHeaders()
     {
-        return $this->response->getHeaders()->toArray();
+        return array_column($this->response->getHeaders()->toArray(), 'values', 'name');
     }
 
     /**
@@ -71,7 +78,8 @@ class Response implements ResponseInterface, Serializable
 
     /**
      * @param string $name
-     * @return array|string|string[]|null
+     * @return string[]
+     * @psalm-suppress UndefinedDocblockClass
      */
     public function getHeader($name)
     {
@@ -89,17 +97,47 @@ class Response implements ResponseInterface, Serializable
             return '';
         }
 
-        return implode(',', $value);
+        return $this->implodeHeader($value);
+    }
+
+    /**
+     * @param mixed $headerValues
+     * @return string
+     */
+    private function implodeHeader($headerValues): string
+    {
+        if (!is_array($headerValues)) {
+            return (string) $headerValues;
+        }
+
+        foreach ($headerValues as $i => $value) {
+            if (is_array($value)) {
+                $headerValues[$i] = $this->implodeHeader($value);
+            }
+        }
+
+        return implode(',', $headerValues);
+    }
+
+    /**
+     * @return HttpResponse
+     * @psalm-suppress InvalidClone, UndefinedClass
+     */
+    private function getClonedResponse(): HttpResponse
+    {
+        return clone $this->response;
     }
 
     /**
      * @param string $name
      * @param string|string[] $value
-     * @return $this|Response
+     *
+     * @return static
+     * @psalm-suppress UndefinedClass
      */
     public function withHeader($name, $value)
     {
-        $newResponse = clone $this->response;
+        $newResponse = $this->getClonedResponse();
         $newResponse->getHeaders()->set($name, $value);
         return new static($newResponse, $this->httpVersion, $this->body);
     }
@@ -107,7 +145,8 @@ class Response implements ResponseInterface, Serializable
     /**
      * @param string $name
      * @param string|string[] $value
-     * @return $this|Response
+     *
+     * @return static
      */
     public function withAddedHeader($name, $value)
     {
@@ -120,7 +159,9 @@ class Response implements ResponseInterface, Serializable
 
     /**
      * @param string $name
-     * @return $this|Response
+     *
+     * @return static
+     * @psalm-suppress UndefinedClass
      */
     public function withoutHeader($name)
     {
@@ -128,13 +169,14 @@ class Response implements ResponseInterface, Serializable
             return $this;
         }
 
-        $newResponse = clone $this->response;
+        $newResponse = $this->getClonedResponse();
         $newResponse->getHeaders()->delete($name);
         return new static($newResponse, $this->httpVersion, $this->body);
     }
 
     /**
      * @return StreamInterface
+     * @psalm-suppress UndefinedDocblockClass
      */
     public function getBody()
     {
@@ -147,12 +189,15 @@ class Response implements ResponseInterface, Serializable
 
     /**
      * @param StreamInterface $body
-     * @return $this|Response
+     *
+     * @return static
+     *
      * @throws ArgumentTypeException
+     * @psalm-suppress UndefinedDocblockClass, UndefinedClass
      */
     public function withBody(StreamInterface $body)
     {
-        $newResponse = clone $this->response;
+        $newResponse = $this->getClonedResponse();
         $newResponse->setContent($body);
 
         return new static($newResponse, $this->httpVersion, $body);
@@ -160,6 +205,7 @@ class Response implements ResponseInterface, Serializable
 
     /**
      * @return int
+     * @psalm-suppress UndefinedDocblockClass
      */
     public function getStatusCode()
     {
@@ -170,17 +216,21 @@ class Response implements ResponseInterface, Serializable
     /**
      * @param int $code
      * @param string $reasonPhrase
-     * @return $this|Response
+     *
+     * @return static
+     *
+     * @psalm-suppress UndefinedClass
      */
     public function withStatus($code, $reasonPhrase = '')
     {
-        $newResponse = clone $this->response;
+        $newResponse = $this->getClonedResponse();
         $newResponse->getHeaders()->set('Status', implode(' ', [$code, $reasonPhrase]));
         return new static($newResponse, $this->httpVersion, $this->body);
     }
 
     /**
-     * @return mixed|string
+     * @return string
+     * @psalm-suppress UndefinedDocblockClass
      */
     public function getReasonPhrase()
     {
@@ -189,7 +239,7 @@ class Response implements ResponseInterface, Serializable
     }
 
     /**
-     * @return string|null
+     * @return string
      */
     public function serialize()
     {
