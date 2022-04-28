@@ -107,7 +107,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         }
 
         $contentType = $this->getHeaderLine('Content-type');
-        if ($contentType === 'application/json') {
+        if (strpos($contentType, 'application/json') === 0) {
             return json_decode($this->body, true) ?? [];
         }
 
