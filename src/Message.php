@@ -71,7 +71,7 @@ class Message implements MessageInterface
      * @return bool
      * @psalm-suppress UndefinedClass
      */
-    private function needCheckBody(HttpRequest $request)
+    private function needCheckBody(HttpRequest $request): bool
     {
         $method = strtolower($request->getRequestMethod());
         return in_array($method, ['post', 'put']);
@@ -144,7 +144,7 @@ class Message implements MessageInterface
      * @return string[]
      * @psalm-suppress UndefinedDocblockClass
      */
-    public function getHeader($name): array
+    public function getHeader(string $name): array
     {
         return (array)($this->request->getHeader($name) ?? []);
     }
@@ -244,7 +244,7 @@ class Message implements MessageInterface
      * @return HttpRequest
      * @psalm-suppress UndefinedDocblockClass, InvalidClone
      */
-    protected function getClonedRequest()
+    protected function getClonedRequest(): HttpRequest
     {
         return clone $this->request;
     }

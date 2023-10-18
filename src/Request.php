@@ -12,7 +12,7 @@ class Request extends Message implements RequestInterface
      * @return string
      * @psalm-suppress UndefinedDocblockClass
      */
-    public function getRequestTarget()
+    public function getRequestTarget(): string
     {
         return (string)$this->request->getRequestUri();
     }
@@ -23,7 +23,7 @@ class Request extends Message implements RequestInterface
      * @return static
      * @psalm-suppress UndefinedDocblockClass
      */
-    public function withRequestTarget($requestTarget)
+    public function withRequestTarget(string $requestTarget): RequestInterface
     {
         $newRequest = $this->getClonedRequest();
         $newRequest->getServer()->set('REQUEST_URI', $requestTarget);
@@ -35,7 +35,7 @@ class Request extends Message implements RequestInterface
      * @return string
      * @psalm-suppress UndefinedDocblockClass
      */
-    public function getMethod()
+    public function getMethod(): string
     {
         return (string)$this->request->getRequestMethod();
     }
@@ -46,7 +46,7 @@ class Request extends Message implements RequestInterface
      * @return static
      * @psalm-suppress UndefinedDocblockClass
      */
-    public function withMethod($method)
+    public function withMethod(string $method): RequestInterface
     {
         $newRequest = $this->getClonedRequest();
         $newRequest->getServer()->set('REQUEST_METHOD', $method);
@@ -57,7 +57,7 @@ class Request extends Message implements RequestInterface
     /**
      * @return UriInterface
      */
-    public function getUri()
+    public function getUri(): UriInterface
     {
         return $this->uri;
     }
@@ -69,7 +69,7 @@ class Request extends Message implements RequestInterface
      * @return static
      * @psalm-suppress UndefinedDocblockClass
      */
-    public function withUri(UriInterface $uri, $preserveHost = false)
+    public function withUri(UriInterface $uri, bool $preserveHost = false): RequestInterface
     {
         $newRequest = $this->getClonedRequest();
         $newRequest->getServer()->set('REQUEST_URI', $uri);
