@@ -32,7 +32,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      *
      * @return static
      */
-    public function withCookieParams(array $cookies)
+    public function withCookieParams(array $cookies): ServerRequestInterface
     {
         $newRequest = $this->getClonedRequest();
         $newRequest->getCookieList()->setValues($cookies);
@@ -45,7 +45,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         return $this->request->getQueryList()->toArray();
     }
 
-    public function withQueryParams(array $query): ServerRequest
+    public function withQueryParams(array $query): ServerRequestInterface
     {
         $newRequest = $this->getClonedRequest();
         $newRequest->getQueryList()->setValues($query);
@@ -57,7 +57,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      * @return array[]|UploadedFile[] (UploadedFile|UploadedFile[])[] (UploadedFile|UploadedFile[])[]
      *
      */
-    public function getUploadedFiles()
+    public function getUploadedFiles(): array
     {
         return array_map(function (array $file) {
             if (is_array($file['tmp_name'])) {
@@ -89,7 +89,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      *
      * @return static
      */
-    public function withUploadedFiles(array $uploadedFiles)
+    public function withUploadedFiles(array $uploadedFiles): ServerRequestInterface
     {
         $newRequest = $this->getClonedRequest();
         $newRequest->getFileList()->setValues($uploadedFiles);
@@ -120,7 +120,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      *
      * @return static
      */
-    public function withParsedBody($data)
+    public function withParsedBody($data): ServerRequestInterface
     {
         $newRequest = $this->getClonedRequest();
         $newRequest->getPostList()->setValues($data);
@@ -141,7 +141,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      * @param mixed $default
      * @return mixed|null
      */
-    public function getAttribute($name, $default = null)
+    public function getAttribute(string $name, $default = null)
     {
         if (false === array_key_exists($name, $this->attributes)) {
             return $default;
@@ -156,7 +156,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      *
      * @return static
      */
-    public function withAttribute($name, $value): ServerRequestInterface
+    public function withAttribute(string $name, $value): ServerRequestInterface
     {
         $new = clone $this;
         $new->attributes[$name] = $value;
@@ -169,7 +169,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      *
      * @return static
      */
-    public function withoutAttribute($name): ServerRequestInterface
+    public function withoutAttribute(string $name): ServerRequestInterface
     {
         if (false === array_key_exists($name, $this->attributes)) {
             return $this;
