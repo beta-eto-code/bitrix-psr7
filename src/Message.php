@@ -94,7 +94,7 @@ class Message implements MessageInterface
      * @return string
      * @psalm-suppress UndefinedDocblockClass
      */
-    public function getProtocolVersion()
+    public function getProtocolVersion(): string
     {
         if (!empty($this->httpVersion)) {
             return $this->httpVersion;
@@ -110,7 +110,7 @@ class Message implements MessageInterface
      *
      * @return static
      */
-    public function withProtocolVersion($version)
+    public function withProtocolVersion(string $version): MessageInterface
     {
         return new static($this->request, $version, $this->body, $this->attributes);
     }
@@ -119,7 +119,7 @@ class Message implements MessageInterface
      * @return string[][]
      * @psalm-suppress UndefinedDocblockClass
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         $headers = $this->request->getHeaders()->toArray();
         foreach ($headers as &$value) {
@@ -134,7 +134,7 @@ class Message implements MessageInterface
      * @param string $name
      * @return bool
      */
-    public function hasHeader($name)
+    public function hasHeader(string $name): bool
     {
         return !empty($this->getHeader($name));
     }
@@ -153,7 +153,7 @@ class Message implements MessageInterface
      * @param string $name
      * @return string
      */
-    public function getHeaderLine($name)
+    public function getHeaderLine(string $name): string
     {
         $value = $this->getHeader($name);
         if (empty($value)) {
@@ -170,7 +170,7 @@ class Message implements MessageInterface
      * @return static
      * @psalm-suppress UndefinedDocblockClass
      */
-    public function withHeader($name, $value)
+    public function withHeader(string $name, $value): MessageInterface
     {
         $newRequest = $this->getClonedRequest();
         $newRequest->getHeaders()->add($name, $value);
@@ -184,7 +184,7 @@ class Message implements MessageInterface
      * @return static
      * @psalm-suppress UndefinedDocblockClass
      */
-    public function withAddedHeader($name, $value)
+    public function withAddedHeader(string $name, $value): MessageInterface
     {
         if ($this->hasHeader($name)) {
             return $this;
@@ -202,7 +202,7 @@ class Message implements MessageInterface
      * @return static
      * @psalm-suppress UndefinedDocblockClass
      */
-    public function withoutHeader($name)
+    public function withoutHeader(string $name): MessageInterface
     {
         if (!$this->hasHeader($name)) {
             return $this;
@@ -217,7 +217,7 @@ class Message implements MessageInterface
     /**
      * @return StreamInterface
      */
-    public function getBody()
+    public function getBody(): StreamInterface
     {
         if (!$this->body) {
             $this->body = Utils::streamFor('');
@@ -231,7 +231,7 @@ class Message implements MessageInterface
      *
      * @return static
      */
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body): MessageInterface
     {
         if ($body === $this->body) {
             return $this;
