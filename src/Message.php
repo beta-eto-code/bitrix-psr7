@@ -69,7 +69,7 @@ class Message implements MessageInterface
     /**
      * @param HttpRequest $request
      * @return bool
-     * @psalm-suppress UndefinedClass
+     * @psalm-suppress UndefinedDocblockClass, UndefinedClass
      */
     private function needCheckBody(HttpRequest $request): bool
     {
@@ -168,7 +168,7 @@ class Message implements MessageInterface
      * @param string|string[] $value
      *
      * @return static
-     * @psalm-suppress UndefinedDocblockClass
+     * @psalm-suppress UndefinedDocblockClass, UndefinedClass
      */
     public function withHeader(string $name, $value): MessageInterface
     {
@@ -242,7 +242,7 @@ class Message implements MessageInterface
 
     /**
      * @return HttpRequest
-     * @psalm-suppress UndefinedDocblockClass, InvalidClone
+     * @psalm-suppress UndefinedDocblockClass, InvalidClone, UndefinedClass
      */
     protected function getClonedRequest(): HttpRequest
     {

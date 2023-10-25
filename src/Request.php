@@ -2,7 +2,6 @@
 
 namespace BitrixPSR7;
 
-use Bitrix\Main\HttpRequest;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
 
