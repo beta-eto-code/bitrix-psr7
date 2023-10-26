@@ -5,6 +5,7 @@ namespace BitrixPSR7;
 use Bitrix\Main\ArgumentTypeException;
 use Bitrix\Main\HttpResponse;
 use GuzzleHttp\Psr7\Utils;
+use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Serializable;
@@ -43,7 +44,7 @@ class Response implements ResponseInterface, Serializable
     /**
      * @return string
      */
-    public function getProtocolVersion()
+    public function getProtocolVersion(): string
     {
         return $this->httpVersion;
     }
@@ -53,7 +54,7 @@ class Response implements ResponseInterface, Serializable
      *
      * @return static
      */
-    public function withProtocolVersion($version)
+    public function withProtocolVersion($version): MessageInterface
     {
         return new static($this->response, $version, $this->body);
     }
@@ -62,7 +63,7 @@ class Response implements ResponseInterface, Serializable
      * @return string[][]
      * @psalm-suppress UndefinedDocblockClass
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return array_column($this->response->getHeaders()->toArray(), 'values', 'name');
     }
@@ -71,7 +72,7 @@ class Response implements ResponseInterface, Serializable
      * @param string $name
      * @return bool
      */
-    public function hasHeader($name)
+    public function hasHeader($name): bool
     {
         return !empty($this->getHeader($name));
     }
@@ -81,7 +82,7 @@ class Response implements ResponseInterface, Serializable
      * @return string[]
      * @psalm-suppress UndefinedDocblockClass
      */
-    public function getHeader($name)
+    public function getHeader($name): array
     {
         return $this->response->getHeaders()->get($name, true);
     }
@@ -90,7 +91,7 @@ class Response implements ResponseInterface, Serializable
      * @param string $name
      * @return string
      */
-    public function getHeaderLine($name)
+    public function getHeaderLine($name): string
     {
         $value = $this->getHeader($name);
         if (empty($value)) {
@@ -121,7 +122,7 @@ class Response implements ResponseInterface, Serializable
 
     /**
      * @return HttpResponse
-     * @psalm-suppress InvalidClone, UndefinedClass
+     * @psalm-suppress InvalidClone, UndefinedClass, UndefinedDocblockClass
      */
     private function getClonedResponse(): HttpResponse
     {
@@ -135,7 +136,7 @@ class Response implements ResponseInterface, Serializable
      * @return static
      * @psalm-suppress UndefinedClass
      */
-    public function withHeader($name, $value)
+    public function withHeader($name, $value): MessageInterface
     {
         $newResponse = $this->getClonedResponse();
         $newResponse->getHeaders()->set($name, $value);
@@ -148,7 +149,7 @@ class Response implements ResponseInterface, Serializable
      *
      * @return static
      */
-    public function withAddedHeader($name, $value)
+    public function withAddedHeader($name, $value): MessageInterface
     {
         if ($this->hasHeader($name)) {
             return $this;
@@ -163,7 +164,7 @@ class Response implements ResponseInterface, Serializable
      * @return static
      * @psalm-suppress UndefinedClass
      */
-    public function withoutHeader($name)
+    public function withoutHeader($name): MessageInterface
     {
         if (!$this->hasHeader($name)) {
             return $this;
@@ -178,7 +179,7 @@ class Response implements ResponseInterface, Serializable
      * @return StreamInterface
      * @psalm-suppress UndefinedDocblockClass
      */
-    public function getBody()
+    public function getBody(): StreamInterface
     {
         if (!$this->body) {
             $this->body = Utils::streamFor($this->response->getContent());
@@ -195,7 +196,7 @@ class Response implements ResponseInterface, Serializable
      * @throws ArgumentTypeException
      * @psalm-suppress UndefinedDocblockClass, UndefinedClass
      */
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body): MessageInterface
     {
         $newResponse = $this->getClonedResponse();
         $newResponse->setContent($body);
@@ -207,7 +208,7 @@ class Response implements ResponseInterface, Serializable
      * @return int
      * @psalm-suppress UndefinedDocblockClass
      */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         preg_match('/(\d+)\s+.*/', $this->response->getStatus(), $match);
         return (int)($match[1] ?? 200);
@@ -221,7 +222,7 @@ class Response implements ResponseInterface, Serializable
      *
      * @psalm-suppress UndefinedClass
      */
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus($code, $reasonPhrase = ''): ResponseInterface
     {
         $newResponse = $this->getClonedResponse();
         $newResponse->getHeaders()->set('Status', implode(' ', [$code, $reasonPhrase]));
@@ -232,7 +233,7 @@ class Response implements ResponseInterface, Serializable
      * @return string
      * @psalm-suppress UndefinedDocblockClass
      */
-    public function getReasonPhrase()
+    public function getReasonPhrase(): string
     {
         preg_match('/\d+\s+(.*)/', $this->response->getStatus(), $match);
         return $match[1] ?? '';
