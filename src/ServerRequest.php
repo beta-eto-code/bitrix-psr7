@@ -4,7 +4,6 @@ namespace BitrixPSR7;
 
 use GuzzleHttp\Psr7\UploadedFile;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UploadedFileInterface;
 
 /**
  * @psalm-suppress UndefinedDocblockClass
@@ -109,7 +108,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         $contentTypeParams = explode(';', $this->getHeaderLine('Content-type'));
         $contentTypeValue = trim(current($contentTypeParams) ?: '');
         if ($contentTypeValue === 'application/json') {
-            return json_decode($this->body, true) ?? [];
+            return json_decode($this->body ?: '', true) ?? [];
         }
 
         return $this->request->getPostList()->toArray();

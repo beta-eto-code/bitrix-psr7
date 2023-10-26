@@ -12,4 +12,17 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
+
+    <issueHandlers>
+        <UndefinedClass>
+            <errorLevel type="suppress">
+                <referencedClass name="Bitrix\*" />
+            </errorLevel>
+        </UndefinedClass>
+        <UndefinedDocblockClass>
+            <errorLevel type="suppress">
+                <referencedClass name="Bitrix\*" />
+            </errorLevel>
+        </UndefinedDocblockClass>
+    </issueHandlers>
 </psalm>

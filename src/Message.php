@@ -13,28 +13,13 @@ class Message implements MessageInterface
 {
     public const DEFAULT_HTTP_VERSION = '1.1';
 
-    protected $request;
+    protected HttpRequest $request;
 
-    /**
-     * @var string
-     */
-    protected $httpVersion;
-    /**
-     * @var mixed|null
-     */
-    protected $body;
-    /**
-     * @var UriInterface
-     */
-    protected $uri;
-    /**
-     * @var array
-     */
-    protected $attributes;
-    /**
-     * @var bool
-     */
-    protected $isCloned;
+    protected ?string $httpVersion;
+    protected mixed $body;
+    protected UriInterface $uri;
+    protected array $attributes;
+    protected bool $isCloned;
 
     /**
      * @param HttpRequest $request
@@ -47,7 +32,7 @@ class Message implements MessageInterface
     final public function __construct(
         HttpRequest $request,
         string $httpVersion = null,
-        $body = null,
+        mixed $body = null,
         array $attributes = [],
         bool $isCloned = false
     ) {

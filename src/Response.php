@@ -14,15 +14,8 @@ class Response implements ResponseInterface, Serializable
 {
     public const DEFAULT_HTTP_VERSION = '1.1';
 
-    /**
-     * @var HttpResponse
-     * @psalm-suppress UndefinedDocblockClass
-     */
-    private $response;
-    /**
-     * @var string
-     */
-    private $httpVersion;
+    private HttpResponse $response;
+    private string $httpVersion;
     /**
      * @var mixed
      */
@@ -51,47 +44,30 @@ class Response implements ResponseInterface, Serializable
 
     /**
      * @param string $version
-     *
-     * @return static
+     * @return MessageInterface
+     * @psalm-suppress LessSpecificImplementedReturnType
      */
-    public function withProtocolVersion($version): MessageInterface
+    public function withProtocolVersion(string $version): MessageInterface
     {
-        return new static($this->response, $version, $this->body);
+        return new Response($this->response, $version, $this->body);
     }
 
-    /**
-     * @return string[][]
-     * @psalm-suppress UndefinedDocblockClass
-     */
     public function getHeaders(): array
     {
         return array_column($this->response->getHeaders()->toArray(), 'values', 'name');
     }
 
-    /**
-     * @param string $name
-     * @return bool
-     */
-    public function hasHeader($name): bool
+    public function hasHeader(string $name): bool
     {
         return !empty($this->getHeader($name));
     }
 
-    /**
-     * @param string $name
-     * @return string[]
-     * @psalm-suppress UndefinedDocblockClass
-     */
-    public function getHeader($name): array
+    public function getHeader(string $name): array
     {
         return $this->response->getHeaders()->get($name, true);
     }
 
-    /**
-     * @param string $name
-     * @return string
-     */
-    public function getHeaderLine($name): string
+    public function getHeaderLine(string $name): string
     {
         $value = $this->getHeader($name);
         if (empty($value)) {
@@ -120,36 +96,34 @@ class Response implements ResponseInterface, Serializable
         return implode(',', $headerValues);
     }
 
-    /**
-     * @return HttpResponse
-     * @psalm-suppress InvalidClone, UndefinedClass, UndefinedDocblockClass
-     */
     private function getClonedResponse(): HttpResponse
     {
+        /**
+         * @psalm-suppress InvalidClone
+         */
         return clone $this->response;
     }
 
     /**
      * @param string $name
      * @param string|string[] $value
-     *
-     * @return static
-     * @psalm-suppress UndefinedClass
+     * @return MessageInterface
+     * @psalm-suppress LessSpecificImplementedReturnType
      */
-    public function withHeader($name, $value): MessageInterface
+    public function withHeader(string $name, $value): MessageInterface
     {
         $newResponse = $this->getClonedResponse();
         $newResponse->getHeaders()->set($name, $value);
-        return new static($newResponse, $this->httpVersion, $this->body);
+        return new Response($newResponse, $this->httpVersion, $this->body);
     }
 
     /**
      * @param string $name
      * @param string|string[] $value
-     *
-     * @return static
+     * @return MessageInterface
+     * @psalm-suppress LessSpecificImplementedReturnType
      */
-    public function withAddedHeader($name, $value): MessageInterface
+    public function withAddedHeader(string $name, $value): MessageInterface
     {
         if ($this->hasHeader($name)) {
             return $this;
@@ -160,11 +134,10 @@ class Response implements ResponseInterface, Serializable
 
     /**
      * @param string $name
-     *
-     * @return static
-     * @psalm-suppress UndefinedClass
+     * @return MessageInterface
+     * @psalm-suppress LessSpecificImplementedReturnType
      */
-    public function withoutHeader($name): MessageInterface
+    public function withoutHeader(string $name): MessageInterface
     {
         if (!$this->hasHeader($name)) {
             return $this;
@@ -172,13 +145,9 @@ class Response implements ResponseInterface, Serializable
 
         $newResponse = $this->getClonedResponse();
         $newResponse->getHeaders()->delete($name);
-        return new static($newResponse, $this->httpVersion, $this->body);
+        return new Response($newResponse, $this->httpVersion, $this->body);
     }
 
-    /**
-     * @return StreamInterface
-     * @psalm-suppress UndefinedDocblockClass
-     */
     public function getBody(): StreamInterface
     {
         if (!$this->body) {
@@ -190,18 +159,15 @@ class Response implements ResponseInterface, Serializable
 
     /**
      * @param StreamInterface $body
-     *
-     * @return static
-     *
-     * @throws ArgumentTypeException
-     * @psalm-suppress UndefinedDocblockClass, UndefinedClass
+     * @return Response
+     * @psalm-suppress LessSpecificImplementedReturnType
      */
     public function withBody(StreamInterface $body): MessageInterface
     {
         $newResponse = $this->getClonedResponse();
         $newResponse->setContent($body);
 
-        return new static($newResponse, $this->httpVersion, $body);
+        return new Response($newResponse, $this->httpVersion, $body);
     }
 
     /**
@@ -217,16 +183,14 @@ class Response implements ResponseInterface, Serializable
     /**
      * @param int $code
      * @param string $reasonPhrase
-     *
-     * @return static
-     *
-     * @psalm-suppress UndefinedClass
+     * @return Response
+     * @psalm-suppress LessSpecificImplementedReturnType
      */
-    public function withStatus($code, $reasonPhrase = ''): ResponseInterface
+    public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
     {
         $newResponse = $this->getClonedResponse();
         $newResponse->getHeaders()->set('Status', implode(' ', [$code, $reasonPhrase]));
-        return new static($newResponse, $this->httpVersion, $this->body);
+        return new Response($newResponse, $this->httpVersion, $this->body);
     }
 
     /**
@@ -239,10 +203,7 @@ class Response implements ResponseInterface, Serializable
         return $match[1] ?? '';
     }
 
-    /**
-     * @return string
-     */
-    public function serialize()
+    public function serialize(): string
     {
         return serialize([
             'response' => $this->response,
@@ -252,11 +213,11 @@ class Response implements ResponseInterface, Serializable
     }
 
     /**
-     * @param string $serialized
+     * @param string $data
      */
-    public function unserialize($serialized)
+    public function unserialize($data): void
     {
-        $data = unserialize($serialized);
+        $data = unserialize($data);
         $this->response = $data['response'];
         $this->httpVersion = $data['http_version'];
         $this->body = $data['body'];
